@@ -14,4 +14,6 @@ Thesis : https://www.cs.cmu.edu/~rwh/theses/xi.pdf
 ---------------------------------------------
 Thanks : 
 
-Prof Raghavan for the Help specially type checking example. Prof Deepak.D for alallowing me to attend the course and rest of the students for tolerating me.   
+Prof Raghavan for the help. Especially type checking example :) 
+
+Prof Deepak.D for alallowing me to attend the course and rest of the students for tolerating me.   
