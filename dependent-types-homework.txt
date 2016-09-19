@@ -1,0 +1,34 @@
+Dear students,
+
+This assignment is about dependent types as described in the paper
+discussed in class.
+
+Say we refine the datatype intlist with an integer-typed index object,
+whose value indicates the sum of all elements in the list.  Saw we refine
+the type "int" with an integer-typed index object whose value is equal to
+the integer itself (therefore, e.g., 5:int(5), and -1:int(-1)).
+
+The signatures of nil and cons will therefore be as follows:
+
+nil: intlist(0)
+
+cons: \Pi i:int. \Pi j:int.
+  int(i) * intlist(j) -> intlist(i+j)
+
+Consider the following function definition insAtEnd, which inserts a given
+element at the end of a given list. Show using a type derivation that type
+indicated for insAtEnd is correct. In the interest of brevity it is ok if
+you ignore the second pattern within the "case" (i.e., you can ignore the
+pattern <k,cons[a][b](<x,xs>)>).
+
+fix insAtEnd: \Pi i:int. \Pi j:int. int(i) * intlist(j) -> intlist(i+j).
+
+  \i:int. \j:int. lam arg: int(i) * intlist(j).
+
+    case arg of
+
+      <k,nil> -> cons[i][0](<k,nil>) |
+
+      <k,cons[a][b](<x,xs>)> -> cons[a][i+b](<x, insAtEnd[i][b](<k,xs>))
+
+Raghavan.
