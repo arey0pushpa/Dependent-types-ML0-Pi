@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+
+		<head>
+				<meta charset="utf-8"/>
+
+				<title>What Every Gangster Should Know About Functional Programming</title>
+
+				<meta name="description" content="What Every Hipster Should Know About Functional Programming"/>
+				<meta name="author" content="sabbath" />
+
+				<meta name="apple-mobile-web-app-capable" content="yes" />
+				<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+				<link rel="stylesheet" href="css/reveal.min.css"/>
+				<link rel="stylesheet" href="css/theme/hipster.css" id="theme"/>
+
+				<!-- For syntax highlighting -->
+				<link rel="stylesheet" href="lib/css/tomorrow-night-eighties.css"/>
+
+				<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+				
+<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML">
+</script>
+	
+		</head>
+
+		<body>
+
+				<div class="reveal">
+
+						<!-- Any section element inside of this container is displayed as a slide -->
+						<div class="slides">
+
+
+								<section>
+										<img src="m/twilight-sparkle.jpg" height="450" width ="650"/>
+							
+										<p> ♥ Dependenent Types in Practicle programming</p>
+								</section>
+								
+								
+						
+         <section>                                        <h5>Thanks  ♥ Giving</h5>
+			 										<img class="plain" src="m/1.jpg" height="300" width ="450"/>
+
+										<div class="pic-label small">
+                                       Lesly Lamport
+										</div>
+										<img class="plain" src="m/2.jpg" height="200" width ="200"/>
+										<img class="plain" src="m/3.jpg" height="200" width ="200"/>
+                                        
+										<div class="pic-label small">
+                                       Dr.Raghavan     .  Deepak D'
+
+										</div>
+										
+                                        
+										
+								</section>
+
+								
+     
+        
+        
+	<section>
+										<img src="m/talk.jpg"/>
+										<pre><code>    "Unfortunately one often pays a price for 
+    [languages which impose no discipline of types]
+    in the time taken to find rather inscrutable bugs ,
+    anyone who mistakenly applies CDR to an atom in 
+    LISP & finds himself absurdly adding a property 
+    list to an integer, will know the symptoms ".
+    
+    – Robin Milner</code></pre>
+          
+								</section>
+						
+						
+<section>
+
+<pre>Some Advantages of Types : <code> 
+1. Detecting program errors at compile-time.
+
+2. Enabling compiler optimizations.
+
+3. Facilitating program verification :
+
+   ▹ Using types to encode program properties   
+   ▹ Verifying the encoded properties via type-checking
+
+4. Serving as program documentation.
+  <!-- Unlike informal comments, types are formally 
+   verified and can thus be fully trusted.-->
+</code></pre>
+</section>						
+						
+						
+						
+								
+								<section>
+								<p>♥ ML {metalanguage}</p>
+									<pre class="repl"><code>									
+▹ Developed by Robin Milner and others in 
+  the early '70s @University of Edinburgh
+
+▹ Well-designed type system.
+                
+▹ Hindley–Milner type system :
+   Type inference algo can automatically
+   assign the types of most expressions 
+   without requiring explicit type annotations.   
+   
+</code></pre></section>
+        
+        
+   <!--                
+<section>
+<pre><code>
+ E : t , read as expression E has type t.
+  
+fun fac (0 : int) : int = 1
+  | fac (n : int) : int = n * fac (n - 1)
+
+Thanks To type inference :
+  
+  fun fac 0 = 1
+  | fac n = n * fac (n - 1)
+  </code></pre></section>                        
+-->                       
+
+<section>
+
+	<p>Our Favorate ML Program </p>
+<pre><code>
+append : 'alist-> 'alist-> 'alist
+fun append (nil, l2) = l2 
+   | append (x::xs, l2) = x::append(xs, l2);
+   
+
+</code></pre>
+<!--
+
+-->
+</section>
+
+
+<section><p>Type Systems:</p>
+<pre><code> 
+♥ Rich , Realistic Languages * Simple Type system * 
+         SML , OCaml, Haskell
+     ^ Type Checking is <b>Decidable.</b>
+       
+♥ Small , Pure Languages * Richer Type theories * 
+         Those underlying Coq, NuPrl , PX
+       
+     ^ Type checking is generally <b>Undecidable</b>
+       or requires extensive verbose annotations.
+         
+ </code></pre>
+</section>
+
+
+<section>
+<pre><code>Shortcomings of Realistic Languages. 
+
+Only relatively elementary properties of program 
+can be expressed and thus checked by a type checker. 
+
+Eg : The error of taking the first element 
+    out of an empty list can not be prevented 
+    by ML type system.    
+<!--Hard to express the type
+of a safe array access operation.-->
+
+TradeOff : <b>"Expressibility Vs Decidability"</b>
+Or write extensive verbose annotations.
+</pre></code>
+</section>
+
+<section>
+<pre><code>♥ Goal :  
+    " Designing a type system for practical programming
+     in which a <b>restricted form of dependent types</b> is 
+     available, allowing more program invariants to be 
+     captured by types".
+
+    Conservatively extend the type system of ML 
+    by allowing some dependencies while maintaining 
+    practical & unintrusive type-checking.
+ 
+</code></pre>
+
+</section>
+
+<section>
+								<p> ♥ Overview of Paper</p>
+<pre class="repl"><code>
+Enriching the type system of ML with a restricted 
+form of dependent types, where type index objects 
+are drawn from a constraint domain C, leading to 
+the DML(C) language schema.
+    
+    ▹ More Precise Type information.
+    
+    ▹ Facilitates Program error detection.
+    
+    ▹ Complier Optimisation.
+    
+</code></pre>
+      						</section>
+
+
+<section>
+<pre><b>Start Point ML0</b><code>
+base types d ::= int | bool | (user defined datatypes)
+types t ::= d | t1 -> t2 | t1 * t2
+patterns p ::= x | c(p) | <> | <p1, p2>
+match clauses ms ::= (p => e) | (p => e | ms)
+
+expressions 
+       e ::= x | f | c | if (e, e1, e2) | <> | <e1, e2> |
+             lam x:t. e | fix f:t. e | e1(e2) |
+             let x=e1 in e2 end | case e of ms
+                
+values  v ::= x | c | <v1, v2> | lam x:t. e
+context  Γ ::= . | Γ, x: t
+
+</code></pre></section>
+
+         
+
+<section>
+<p>Dependent Types :</p>		
+	
+ <!--♥ Family of types indexed by a type. 
+      Type B depends on type A 
+      B is a type family indexed by type A 
+      B is a dependent type indexed by type A 
+      <b>B : A → Type</b> 	        -->
+	<pre><code> Dependent types are "types that depend on elements 
+           of other types". 
+Example :
+▹ Type An of vectors of length n with components of type A
+  Type An depends on the number n,  or that
+  An is a "family of types indexed by the number n".
+
+▹ Type Am × n of m × n-matrices. 
+  
+▹ Type of trees of a certain height.
+  
+▹  x:Nat, y:Seq(x) |- ...
+</code></pre>		 			
+</section>
+
+
+<section><pre>• Our Favorite function ML Is back :<code> 
+   append: ’alist -> ’alist -> ’alist
+
+A correct implementation of the append function on lists
+sld return a list of length m + n when given two lists
+of length m and n. This property cannot be captured by 
+the type system of ML(above type).
+
+• Reason abt list lengths with restricted form of dep types
+
+ append : ’alist(m) -> ’alist(n) -> ’alist(m + n)
+             m,n are index objects
+</code></pre></section>
+
+<section>
+<p>Full Example :</p>
+<!--
+<pre><code>
+ datatype ’a list (int) =
+ nil(0) | {n:nat} cons(n+1) of ’a * ’a list(n)
+
+ fun(’a) 
+      append (nil, ys) = ys
+    | append (cons (x, xs), ys) = cons (x, append (xs, ys))
+ withtype {m:nat,n:nat} ’a list(m) * ’a list(n) 
+                   -> ’a list(m+n)
+
+</code></pre>
+-->
+<pre><code>datatype ’a list = nil | cons of ’a * ’a list
+          
+typeref ’a list of nat with 
+(* indexing the datatype ’a list with nat *)
+    nil <| ’a list(0)
+  | cons <| {n:nat} ’a * ’a list(n) -> ’a list(n+1)
+          
+fun(’a)
+    append(nil, ys) = ys
+  | append(cons(x, xs), ys) = cons(x, append(xs, ys))
+where append <| {m:nat}{n:nat} ’a list(m) * ’a list(n)
+                 -> ’a list(m+n)
+                 
+</code></pre>
+
+</section>
+
+<section><pre> 
+<code>The declared type constructor list takes a type τ
+and a type index n(of sort int) to form a type <b>(τ)list(n)</b>
+for lists of length n in which each element is of type τ. 
+
+The constructors of ’a list are then assgn depent types:
+
+• <b>nil <| ’a list(0)</b>
+<i>(* nil is an ’a list of length 0. *)</i>
+
+• <b>cons <| {n:nat} ’a * ’a list(n) -> ’a list(n+1) </b>
+<i>(* cons yields an ’a list of length n+1 when given a pair 
+consisting of an elem of type ’a & an ’a list of lengt n *)</i>
+</code></pre>
+</section>
+
+<section><pre> <code>
+ {n:nat} is dependent function type constructor, 
+ written as <b>Πn : nat</b>. Seen as universal quantifier. 
+
+ The <b>where</b> clause <i>in the declaration of
+ append is a type annotation, which precisely states
+ that append returns a list of length m + n.</i>
+
+</code></pre>
+</section>
+
+
+<section> <code>Constraint Domains
+ : <pre> 
+Traditionally, index objects are language expressions.
+
+• Instead our lang is "parameterize over a domain of 
+  constraints" from which type index objects are drawn.
+
+ Examples include:
+   • Linear inequalities over integers
+   • Boolean constraints
+   • Finite Sets
+
+</code></pre>
+
+</section>
+
+<section>
+<pre><b><ul>Integer Constraint Domain</ul></b> :<code>
+We use a for index variables.
+index expressions i, j ::= a | c | i + j | i – j
+		 | i * j | i / j | …
+index propositions P, Q ::= i < j | i <= j | i > j |
+              i >= j | i = j | i <> j | P ∧ Q | P ∨ Q
+
+<b>index sorts   γ ::= int | {a : γ | P }</b>
+
+index variable contexts  φ ::= . | φ, a: γ | φ, P
+index constraints  Φ ::= P | P ⊃ Φ | ∀a: γ. Φ
+satisfaction relation φ |= Φ
+
+</code></pre>
+
+</section>
+
+<section> <p>Index sort :</p><pre><code>Constraints themselves are typed. 
+
+We call the types of the constraint lang "index sorts".
+
+Here {a : γ | P} is the subset index sort
+for those elements of γ satisfying proposition P.
+
+For instance, <b>nat</b> is an abbreviation for 
+ <i>{a : int | a ≥ 0}</i>.
+
+The satisfaction relation φ |= Φ means that Φ is sat
+ in the constraint domain under index context φ.
+
+</code></pre>
+</section>
+
+				
+				
+
+				
+
+				<section>
+					<pre>Important Points :
+					<code> ♥ Family of types Indexed by type
+	
+  1.Distinction between two water Tight worlds.
+    
+  2.Type checking reduced to Constraint Solving.
+	 
+  3.Property became  <a href="http://kangax.github.io/es5-compat-table/#ie9">Physical Value</a>
+
+  4.Decleration common type definition :  <a>refactoring</a>
+					</code></pre>
+				</section>
+
+				<section>
+				<p>Universal Dependent Types :</p>				
+				<pre><code>
+families δ ::= families of builtin,user-dec refined type
+constructor signature S ::= · | S, c : Πa1 : γ1
+                                 . . . Πan : γm.τ → δ(i)
+major types µ ::= δ(i) | (τ1 ∗ τ2) | (τ1 → τ2)
+
+types τ ::= <b>µ | (Πa : γ.τ)</b>
+
+For instance, int(0), bool array(16);
+   nat = [a:int | a >= 0] int(a);
+   {a:int | a >= 0} int list(a) -> int list(a)
+				</code></pre>
+				
+				</section>	
+
+<section>
+<!--
+<section>
+	  <img class="plain" src="m/g.jpg" height="600" width ="820"/>
+	  <div class="pic-label big">
+            Examples 
+          </div>
+  </section>
+
+
+<section>
+   
+</section>
+
+
+<section>
+<pre class="repl">
+▹ Universal Dependent types:<code>
+Extends ML0 with universal dependent types.
+</code></pre>
+</section>
+
+
+          
+			<section><p>Dependent types</p>
+			<pre class="context"><code>
+In intuitionistic type theory, dependent 
+types are used to encode logic's quantifiers 
+like "for all" and "there exists".</pre></code>
+      
+			</section>
+											
+<section><p>Universal dependent Types</p>
+<pre class="context"><code>♥ Dependent functions 
+    A dependent function's return type may 
+    depend on the value (not just type) of an argument. 
+    A function that takes a positive integer
+     "n" may return an array of length "n" 
+   
+♥ Dependent pairs
+     A dependent pair may have a second value
+     that depends on the first.
+   It can be used to encode a pair of integers
+    where the second one is greater than the first.
+										         
+</code></pre>
+</section>
+								
+-->
+<section><pre><b> Typing Rule and Judgement </b>:<code>
+typing judgment  φ;Γ |- e : t 
+                   φ |- τ1 ≡ τ2
+                  
+ φ;Γ |= e:τ  φ |= τ1 ≡ τ2
+---------------------------
+      φ;Γ |= e:τ2
+
+φ- index context , Γ- type context
+
+#  For rest refer Paper #
+</code>
+</section>							
+								
+	<section><pre> An expression in MLΠ0 (C):<code>
+fix append : Πm : nat.Πn :
+      nat.intlist(m) ∗ intlist(n) → intlist(m + n).
+  λm : nat.λn : nat.lam l : intlist(m) ∗ intlist(n).
+     case l of
+       〈nil,ys ⇒ ys〉
+       〈cons[a](x , xs), ys〉  ⇒ 
+          〈cons[a + n](〈x, append[a][n](〈xs,ys〉)〉)
+</code>
+</section>		
+							
+	<section>
+<p> Lets Type Check It :</p>		
+<img src="m/2.gif" alt="" height="400" width="550">
+</section>				
+								
+<section>
+<p> Constructing DML(C) :</p>
+<pre><code>
+    <b>ML 0 ← MLΠ 0 ← ML0 Π,Σ ← DML(C)</b>
+
+• ML 0:
+    • Explicitly typed
+    • Overly verbose
+    • Type checking is reduced to constraint
+      satisfaction in C
+• ML0 Π
+      - Add universal dependent types
+• ML0 Π,Σ
+      - Add Existential types
+</code></pre>
+</section>										
+
+
+
+<section>
+<p>Red-Black Trees :</p>
+<pre><code>
+Recall Red-Black Trees:
+
+• Every node is either red or black.
+• All leaves are black.
+• For every node the black height of its children is equal
+• Both children of any red node are black.
+
+</code></pre>
+</section>	
+
+<section>
+<p>Red-Black Trees :</p>
+<pre><code>type ’a entry = int * ’a
+datatype ’a dict =
+  |  Empty (*consideredblack*)
+  |  Black of ’a entry * ’a dict * ’a dict
+  |  Red of ’a entry * ’a dict * ’a dict
+
+typeref ’a dict of bool * nat with
+  |  Empty <| ’a dict(true,0)
+  |  Black <| {cl:bool}{cr:bool}{bh:nat} ’a entry * 
+   ’a dict(cl,bh) * ’a dict(cr,bh) -> ’a dict(true,bh+1)
+  |  Red <| {bh:nat}  ’a entry * ’a dict(true,bh)
+    * ’a dict(true,bh) -> ’a dict(false,bh)
+</code></pre>
+</section>	
+
+<section>
+<p>Dead Code Elimination :</p>
+<pre><code>
+exception zipException
+fun(’a,’b)
+   | zip(nil,nil) = nil
+   | zip(cons(x,xs),cons(y,ys)) =
+         cons((x,y),zip(xs,ys))
+   | zip( _,_ ) = raisezipException
+   
+</code></pre>
+</section>	
+
+   <section>
+	  <img class="plain" src="m/45.gif" height="570" width ="870"/>
+  </section>
+  
+  <!--
+  <section>
+	  <img class="plain" src="m/13.jpg"/>
+	  <div class="pic-label big">
+            Future Work
+          </div>
+  </section>	
+    <section>
+	  <img class="plain" src="m/44.gif" height="570" width ="870"/>
+  </section>							
+
+
+								<section>
+										<img class="plain" src="m/wat.jpg"/>
+								</section>
+								
+
+						</div>
+-->
+				</div>
+
+				<script src="lib/js/head.min.js"></script>
+				<script src="js/reveal.js"></script>
+
+				<script type="text/javascript">
+
+						// Full list of configuration options available here:
+						// https://github.com/hakimel/reveal.js#configuration
+						Reveal.initialize({
+								controls: false,
+								progress: false,
+								history: true,
+								center: true,
+								mouseWheel: true,
+								rollingLinks: false,
+
+								theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+								transition: Reveal.getQueryHash().transition || 'zoom', // default/cube/page/concave/zoom/linear/none
+
+								// Optional libraries used to extend on reveal.js
+								dependencies: [
+										{ src: 'lib/js/underscore.js', async: true, condition: function() { return true; } },
+										{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+										{ src: 'plugin/markdown/showdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+										{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+										{ src: 'plugin/prettify/prettify.js', async: true, callback: function() {
+												var i, els = document.querySelectorAll("code"), l = els.length, el;
+												for (i = 0; i < l; i++) {
+														el = els[i];
+														if (el.className !== "no-highlight")
+																el.innerHTML = prettyPrintOne(el.innerHTML, el.className);
+												}
+										} },
+										{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+										{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+										{ src: 'plugin/catnip/catnip.js', async: true, condition: function() { return window.parent !== window; } },
+										{ src: 'plugin/repl/ace/ace.js', async: true },
+										{ src: 'plugin/repl/typescript.js', async: true },
+										{ src: 'plugin/repl/repl.js', async: true }
+										// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+								]
+						});
+
+				</script>
+
+		</body>
+</html>
