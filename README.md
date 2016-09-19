@@ -1,4 +1,4 @@
-Slides: Model Checking V - t snares 
+Dependent Type Paper presentation @IISC  
 ===================================================================
 
 Keybindings:
@@ -6,15 +6,12 @@ Keybindings:
 * `Ctrl-S` evaluates all expressions in the edit buffer.
 * `Alt-PgUp` and `Alt-PgDn` navigates through slides when the editor is active. Otherwise, cursor keys will work, though embarrassingly mainstream.
 
-Inspirations and thanks 
-====================================================================
+Paper Title : Dependent Type 
+Link : https://www.cs.bu.edu/~hwxi/academic/papers/popl99.pdf
+       https://www.cs.cmu.edu/~fp/papers/popl99.pdf
+Thesis : https://www.cs.cmu.edu/~rwh/theses/xi.pdf
 
-Bodil main presentation "what every hipster should know about func
-prog "is configured for this presentaion with neat handwriting .
+---------------------------------------------
+Thanks : 
 
-Sorry for the too many pink headings & love symbols  .
- Inspired by book on algo and python.
- ♥ Python and Algorithms ♥
- by mari wahl.
- 
-so txs to Mari for Love symbol and bluefish editor to help editing these slides.
+Prof Raghavan for the Help specially type checking example. Prof Dsuza for alalowing me to attend the course and rest of students for tolerating me.   
